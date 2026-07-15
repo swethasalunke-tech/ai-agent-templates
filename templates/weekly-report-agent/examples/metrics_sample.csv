@@ -1,0 +1,16 @@
+week_ending,metric_name,value,unit,change_from_prior_week
+2025-04-25,active_users,4821,count,+3.2%
+2025-04-25,new_signups,312,count,+8.1%
+2025-04-25,churned_users,47,count,-12.0%
+2025-04-25,p50_api_latency_ms,142,ms,-4.0%
+2025-04-25,p99_api_latency_ms,890,ms,+2.3%
+2025-04-25,api_error_rate_pct,0.18,percent,-0.05
+2025-04-25,mrr_usd,187400,usd,+1.9%
+2025-04-25,expansion_mrr_usd,8200,usd,+22.4%
+2025-04-25,contraction_mrr_usd,3100,usd,-8.8%
+2025-04-25,pdf_exports,2940,count,+5.1%
+2025-04-25,api_calls_total,1482000,count,+6.7%
+2025-04-25,support_tickets_opened,88,count,-18.5%
+2025-04-25,support_tickets_resolved,102,count,+4.1%
+2025-04-25,avg_resolution_time_hrs,6.4,hours,-1.2
+2025-04-25,nps_score,52,score,+3
