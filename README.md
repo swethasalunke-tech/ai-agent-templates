@@ -6,7 +6,7 @@ A collection of practical, working agent patterns for product managers, operatio
 
 ### weekly-report-agent
 
-Demonstrates multi-tool orchestration: the agent autonomously fetches Jira tickets, loads a metrics CSV, synthesizes both sources into a narrative, and formats the result as a Slack message — without explicit step-by-step instructions in the user prompt.
+Demonstrates multi-tool orchestration: the agent autonomously fetches Jira tickets, loads a metrics CSV, synthesizes both sources into a narrative, and formats the result as a Slack message â without explicit step-by-step instructions in the user prompt.
 
 ## Prerequisites
 
@@ -61,7 +61,7 @@ Every template follows the same pattern:
 3. Append the assistant response and the tool results to the message history.
 4. Repeat until the model returns `stop_reason: end_turn`.
 
-This loop is implemented directly in `agent.py` using the `anthropic` Python SDK. There is no framework or abstraction layer — the code is straightforward to read, modify, and extend.
+This loop is implemented directly in `agent.py` using the `anthropic` Python SDK. There is no framework or abstraction layer â the code is straightforward to read, modify, and extend.
 
 ## Adapting templates to production
 
@@ -71,3 +71,8 @@ This loop is implemented directly in `agent.py` using the `anthropic` Python SDK
 - Replace `load_metrics_csv` with your production database connection.
 
 The agent logic in `agent.py` does not need to change when you swap in real tool implementations.
+
+
+## Related Projects
+
+- [pm-agents](https://github.com/swethasalunke-tech/pm-agents) - six Claude agents for PM workflows (PRD writing, roadmap prioritization, meeting notes, user research synthesis, sprint retro, competitive intel)
