@@ -22,6 +22,7 @@ import click
 from rich.console import Console
 from rich.panel import Panel
 from rich.syntax import Syntax
+from rich.text import Text
 
 from tools import TOOL_DEFINITIONS, dispatch_tool
 
@@ -61,17 +62,22 @@ def run_agent(project: str, metrics_filepath: str, week_ending: str, model: str)
     iteration = 0
     max_iterations = 20
     final_slack_message: str | None = None
+    ended_via_stop = False
 
     while iteration < max_iterations:
         iteration += 1
 
-        response = client.messages.create(
-            model=model,
-            max_tokens=4096,
-            system=SYSTEM_PROMPT,
-            tools=TOOL_DEFINITIONS,
-            messages=messages,
-        )
+        try:
+            response = client.messages.create(
+                model=model,
+                max_tokens=4096,
+                system=SYSTEM_PROMPT,
+                tools=TOOL_DEFINITIONS,
+                messages=messages,
+            )
+        except anthropic.APIError as exc:
+            console.print(f"[bold red]Anthropic API error:[/bold red] {exc}")
+            sys.exit(1)
 
         tool_results = []
         for block in response.content:
@@ -97,11 +103,12 @@ def run_agent(project: str, metrics_filepath: str, week_ending: str, model: str)
                     }
                 )
             elif block.type == "text" and block.text.strip():
-                console.print(Panel(block.text, title="Agent Notes", style="dim"))
+                console.print(Panel(Text(block.text), title="Agent Notes", style="dim"))
 
         messages.append({"role": "assistant", "content": response.content})
 
         if response.stop_reason == "end_turn":
+            ended_via_stop = True
             break
 
         if tool_results:
@@ -109,10 +116,17 @@ def run_agent(project: str, metrics_filepath: str, week_ending: str, model: str)
         else:
             break
 
+    if not ended_via_stop:
+        console.print(
+            f"[yellow]Stopped after hitting the {max_iterations}-iteration limit "
+            "without the model reaching a normal end turn. "
+            "The report below, if any, may be incomplete.[/yellow]"
+        )
+
     if final_slack_message:
         console.print(
             Panel(
-                final_slack_message,
+                Text(final_slack_message),
                 title="Slack Message (ready to post)",
                 style="green",
                 padding=(1, 2),
