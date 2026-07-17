@@ -15,6 +15,19 @@ Given a project key and a metrics CSV, the agent:
 
 The agent is instructed to be specific: every bullet must contain a real data point or a concrete work item, not generic filler language.
 
+## Scope
+
+**Primary function:** generate a single Slack-formatted weekly status report by combining Jira ticket activity with a metrics CSV for one project over one week.
+
+**Out of scope (by design, to keep this template focused):**
+- Posting the message to Slack, Jira, or anywhere else — the agent only produces the text; sending it is a deliberate manual step.
+- Multiple projects or multi-week trend analysis in a single run.
+- Editing or updating Jira tickets.
+
+**Expected input:** a Jira project key from the mock data (`PROD`, `INFRA`, `DATA`), a metrics CSV in the same shape as `examples/metrics_sample.csv`, and a week-ending date.
+
+**Expected output:** a Slack mrkdwn-formatted status update (headline, metrics, shipped work, risks/blockers, next week), printed to the terminal — or an explicit `[yellow]` warning if the agent couldn't produce one (see "Error handling" below).
+
 ## Prerequisites
 
 - Python 3.10 or later
@@ -84,6 +97,14 @@ _Bulk-assign shipped to GA and MRR grew 1.9% week-over-week, while a search late
 • Move PROD-1840 (AI summaries feedback UI) from review to done
 • Complete PROD-1842 (export retry UI) to reduce repeat support tickets
 ```
+
+## Error handling
+
+This template follows Anthropic's guidance on [writing tools for agents](https://www.anthropic.com/engineering/writing-tools-for-agents): tool failures should come back to the model as clear, actionable content, not opaque errors or tracebacks.
+
+- **Bad tool arguments or a failing tool** (`tools.py`, `dispatch_tool`): if the model calls a tool with a missing or malformed argument, or a tool implementation raises, the error is caught and returned as a normal `tool_result` (`{"error": "..."}`) instead of crashing the process. The model sees the error and can retry with corrected input.
+- **Claude API failures** (`agent.py`, `run_agent`): rate limits, auth errors, and connection drops raise `anthropic.APIError`. This is caught at the call site and reported cleanly instead of surfacing a raw stack trace.
+- **Iteration limit**: the loop is capped at `max_iterations = 20` (see Anthropic's [building effective agents](https://www.anthropic.com/engineering/building-effective-agents), which recommends a stopping condition to keep agents from running unbounded). If the cap is hit before the model reaches a normal end turn, the script prints an explicit warning rather than silently presenting a possibly-incomplete report as finished.
 
 ## Adapting to real data sources
 
