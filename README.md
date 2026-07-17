@@ -63,6 +63,16 @@ Every template follows the same pattern:
 
 This loop is implemented directly in `agent.py` using the `anthropic` Python SDK. There is no framework or abstraction layer â the code is straightforward to read, modify, and extend.
 
+## Design principles
+
+This repo is meant to be read, not just run. The patterns below are deliberate, drawn from Anthropic's and AWS's published guidance on building agents, and each is fixable/verifiable in the code itself rather than asserted here:
+
+- **Bounded iteration.** Every agent loop has a hard `max_iterations` cap and reports explicitly if it's hit without a normal end turn, instead of running unbounded or silently returning a partial result. ([Anthropic: building effective agents](https://www.anthropic.com/engineering/building-effective-agents) recommends stopping conditions to keep agents under control.)
+- **Actionable tool errors, not crashes.** Tool dispatch catches bad arguments and runtime failures and returns them to the model as structured `{"error": "..."}` tool results, so the agent can see what went wrong and retry — rather than the whole process dying on an uncaught exception. ([Anthropic: writing effective tools for agents](https://www.anthropic.com/engineering/writing-tools-for-agents) — "prompt-engineer your error responses to clearly communicate specific and actionable improvements, rather than opaque error codes or tracebacks.")
+- **Explicit scope.** Each template's README states what it does and, just as importantly, what it deliberately does not do — following [AWS's guidance](https://aws.amazon.com/blogs/machine-learning/best-practices-for-building-robust-generative-ai-applications-with-amazon-bedrock-agents-part-1/) to define an agent's primary functions and out-of-scope tasks before building it.
+- **No silent side effects.** Templates that produce an externally-visible artifact (a Slack message, an email) stop at generating the text. Actually sending it is left as a deliberate, separate step, so nothing gets posted or delivered without a human choosing to do so.
+- **Clear tool definitions.** Tool `input_schema`s include a description for every parameter, and tool descriptions state exactly when and how to use each one — Anthropic's "agent-computer interface" (ACI) guidance found that tool description quality has an outsized effect on error rates.
+
 ## Adapting templates to production
 
 `tools.py` contains mock implementations. To connect to real systems:
