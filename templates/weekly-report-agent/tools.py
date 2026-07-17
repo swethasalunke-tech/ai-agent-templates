@@ -222,12 +222,42 @@ def format_for_slack(
 
 
 def dispatch_tool(tool_name: str, tool_input: dict[str, Any]) -> str:
-    if tool_name == "fetch_jira_tickets":
-        result = fetch_jira_tickets(**tool_input)
-    elif tool_name == "load_metrics_csv":
-        result = load_metrics_csv(**tool_input)
-    elif tool_name == "format_for_slack":
-        result = format_for_slack(**tool_input)
-    else:
-        result = {"error": f"Unknown tool: {tool_name}"}
+    """Execute a tool call and always return a JSON string.
+
+    Any failure -- a missing/invalid argument, an unknown tool name, or an
+    unexpected runtime error inside a tool -- is caught here and turned into
+    a structured {"error": ...} JSON response instead of raising. This is
+    what keeps a single bad tool call from crashing the whole agent loop:
+    the error is fed back to Claude as a normal tool_result, so the model
+    can see exactly what went wrong and retry with corrected arguments,
+    rather than the process dying with a raw Python traceback.
+    """
+    handlers = {
+        "fetch_jira_tickets": fetch_jira_tickets,
+        "load_metrics_csv": load_metrics_csv,
+        "format_for_slack": format_for_slack,
+    }
+
+    handler = handlers.get(tool_name)
+    if handler is None:
+        return json.dumps({"error": f"Unknown tool: {tool_name}"}, indent=2)
+
+    try:
+        result = handler(**tool_input)
+    except TypeError as exc:
+        return json.dumps(
+            {
+                "error": (
+                    f"Invalid arguments for '{tool_name}': {exc}. "
+                    "Check the tool's input_schema and retry with corrected arguments."
+                )
+            },
+            indent=2,
+        )
+    except Exception as exc:
+        return json.dumps(
+            {"error": f"'{tool_name}' failed: {type(exc).__name__}: {exc}"},
+            indent=2,
+        )
+
     return json.dumps(result, indent=2)
