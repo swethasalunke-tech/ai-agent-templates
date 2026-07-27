@@ -1,0 +1,42 @@
+[
+  {
+    "id": "TASK-001",
+    "title": "API returns 500 on bulk export for workspaces over 10k rows",
+    "description": "Bulk export endpoint times out and returns a 500 error once a workspace has more than roughly 10,000 rows. Affects the /v2/export endpoint specifically."
+  },
+  {
+    "id": "TASK-002",
+    "title": "Add pagination to the admin users table",
+    "description": "The admin users table loads all users in one request. Needs cursor-based pagination to stay responsive on large accounts."
+  },
+  {
+    "id": "TASK-003",
+    "title": "Fix broken foreign key constraint on migration 0042",
+    "description": "Migration 0042 fails on a fresh database because the foreign key references a table created in a later migration."
+  },
+  {
+    "id": "TASK-004",
+    "title": "Redesign the empty state for the reports page",
+    "description": "New accounts see a blank reports page with no guidance. Needs an illustrated empty state with a clear call to action."
+  },
+  {
+    "id": "TASK-005",
+    "title": "Customer can't reset password after email change",
+    "description": "A customer changed their account email and can no longer trigger a password reset email to either the old or new address."
+  },
+  {
+    "id": "TASK-006",
+    "title": "Define pricing for the new team analytics add-on",
+    "description": "Need to settle on pricing tiers and packaging for the analytics add-on ahead of the beta launch, coordinating with engineering on what's technically feasible to meter."
+  },
+  {
+    "id": "TASK-007",
+    "title": "Update icon set to match new brand guidelines",
+    "description": "Replace the current icon library with the new brand-approved icon set across the web app."
+  },
+  {
+    "id": "TASK-008",
+    "title": "Investigate slow dashboard load time reported by three enterprise customers",
+    "description": "Three enterprise accounts report dashboard load times over 8 seconds. Needs profiling to find the bottleneck."
+  }
+]
