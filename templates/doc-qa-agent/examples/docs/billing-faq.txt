@@ -1,0 +1,13 @@
+Billing FAQ (Example)
+
+Do you offer annual billing?
+Yes. Annual billing is available on the Starter, Pro, and Enterprise plans and includes a 15% discount versus paying monthly. You can switch from monthly to annual billing at any time from Account Settings > Billing; the switch takes effect at your next renewal date.
+
+What payment methods are accepted?
+We accept all major credit cards and, for Enterprise plans, ACH bank transfer and invoicing with net-30 terms.
+
+Can I get an invoice instead of a receipt?
+Yes, itemized invoices are available for all plans under Account Settings > Billing > Invoices.
+
+What happens if a payment fails?
+We retry a failed payment three times over seven days. If all retries fail, the account is downgraded to the Free plan until billing is resolved.
