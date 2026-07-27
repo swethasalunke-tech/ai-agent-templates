@@ -1,0 +1,16 @@
+Terms of Service (Example)
+
+1. Accounts
+You must provide accurate information when creating an account and are responsible for activity under your account.
+
+2. Billing and Refunds
+Annual plans may be refunded in full within 30 days of purchase. Monthly plans may be refunded within 14 days of purchase. Refund requests must be sent to support@example.com and are processed within 5 business days. After the applicable window, subscriptions are non-refundable but can be cancelled to stop future billing.
+
+3. Trial Period
+New accounts on the Pro and Enterprise plans include a 14-day free trial. No payment method is required to start a trial. If a payment method is added and the trial is not cancelled, billing begins automatically on day 15.
+
+4. Cancellation
+You may cancel at any time from Account Settings > Billing. Cancellation takes effect at the end of the current billing period; there is no partial-period refund outside the refund windows above.
+
+5. Data Retention
+Account data is retained for 90 days after cancellation, after which it is permanently deleted.
