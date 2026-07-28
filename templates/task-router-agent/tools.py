@@ -97,7 +97,7 @@ def dispatch_tool(tool_name: str, tool_input: dict[str, Any]) -> str:
     if tool_name == "route_task":
         result = route_task(**tool_input)
     elif tool_name == "flag_for_review":
-        result = flag_for_review(*ª'tool_input)
+        result = flag_for_review(**tool_input)
     elif tool_name == "write_routing_report":
         result = write_routing_report(**tool_input)
     else:
