@@ -1,0 +1,32 @@
+[
+  {
+    "id": "INC-001",
+    "reported_at": "2025-04-28T02:14:00Z",
+    "reporter": "on-call-engineer",
+    "description": "All users are unable to log in. Authentication service is returning 503 errors. Error rate is 100%. Affects all regions. Started approximately 10 minutes ago."
+  },
+  {
+    "id": "INC-002",
+    "reported_at": "2025-04-28T09:45:00Z",
+    "reporter": "customer-support",
+    "description": "Several enterprise customers in the EU region are reporting that PDF exports are failing silently. The export job appears to start but never completes. Estimated to affect roughly 15% of EU enterprise accounts."
+  },
+  {
+    "id": "INC-003",
+    "reported_at": "2025-04-28T11:30:00Z",
+    "reporter": "monitoring-alert",
+    "description": "Search latency has spiked from a baseline of 200ms to over 8 seconds on the US-East cluster. Database CPU is at 94%. No errors yet but user complaints are starting to come in."
+  },
+  {
+    "id": "INC-004",
+    "reported_at": "2025-04-28T14:00:00Z",
+    "reporter": "customer-support",
+    "description": "One customer reports that their webhook endpoint stopped receiving events after they rotated their API key. Other customers on the same plan appear unaffected."
+  },
+  {
+    "id": "INC-005",
+    "reported_at": "2025-04-28T16:20:00Z",
+    "reporter": "data-team",
+    "description": "The nightly billing aggregation job failed to run last night. No charges were processed for the monthly billing cycle. Finance has been notified. Root cause appears to be a misconfigured cron job after last week's infrastructure migration."
+  }
+]
