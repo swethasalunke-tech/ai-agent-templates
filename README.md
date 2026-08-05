@@ -2,7 +2,29 @@
 
 A collection of practical, working agent patterns for product managers, operations teams, and builders. Each template is a self-contained Python script that runs end-to-end using the Anthropic Claude API with tool use.
 
+The focus is on problems that arise in real product and operations work: triaging feedback, exploring data, responding to incidents, and writing weekly reports. Every template uses mock tool responses where external services would be needed, so you can run them immediately and swap in real integrations when you are ready.
+
 ## Templates
+
+### doc-qa-agent
+
+Answers natural language questions about a folder of documents by retrieving the most relevant passages and grounding its answer strictly in that content. Uses plain keyword-overlap scoring for retrieval, so it runs with zero extra infrastructure — no embeddings or vector database required.
+
+### task-router-agent
+
+Reads a list of tasks and routes each one to the team best positioned to handle it (engineering, design, product, or support), flags ambiguous ones for human review, and writes a short routing report. A good starting point for any triage-and-assign workflow.
+
+### feedback-triage-agent
+
+Reads a batch of customer feedback items and classifies each one by type (bug, feature request, question, praise), assigns severity, identifies the responsible team, submits a mock Jira ticket, and drafts a customer-facing response. Good starting point for any batch classification workflow.
+
+### data-explorer-agent
+
+Accepts natural language questions about a product metrics database and translates them to SQL queries against a local SQLite database. Iterates if results are empty or need clarification. Ships with a sample database of users, events, revenue, and feature data.
+
+### incident-triage-agent
+
+Reads incident descriptions, classifies severity (P1-P4), identifies likely affected systems from a configurable list, retrieves the relevant runbook, and drafts a customer-facing status page update. Accepts both batch files and single descriptions from the command line.
 
 ### weekly-report-agent
 
@@ -14,6 +36,8 @@ Demonstrates multi-tool orchestration: the agent autonomously fetches Jira ticke
 - An Anthropic API key set as `ANTHROPIC_API_KEY` in your environment
 
 ## Install
+
+All templates share the same dependencies. Install once from the repo root:
 
 ```bash
 pip install -r requirements.txt
@@ -31,7 +55,7 @@ pip install -r requirements.txt
 
 ```bash
 export ANTHROPIC_API_KEY=your_key_here
-cd templates/weekly-report-agent
+cd templates/<template-name>
 python agent.py
 ```
 
@@ -45,6 +69,32 @@ ai-agent-templates/
   .gitignore
   README.md
   templates/
+    doc-qa-agent/
+      agent.py
+      tools.py
+      examples/docs/billing-faq.txt
+      examples/docs/terms-of-service.txt
+      README.md
+    task-router-agent/
+      agent.py
+      tools.py
+      examples/tasks.json
+      README.md
+    feedback-triage-agent/
+      agent.py
+      tools.py
+      examples/feedback_batch.json
+      README.md
+    data-explorer-agent/
+      agent.py
+      tools.py
+      setup_db.py
+      README.md
+    incident-triage-agent/
+      agent.py
+      tools.py
+      examples/incidents.json
+      README.md
     weekly-report-agent/
       agent.py
       tools.py
@@ -61,28 +111,15 @@ Every template follows the same pattern:
 3. Append the assistant response and the tool results to the message history.
 4. Repeat until the model returns `stop_reason: end_turn`.
 
-This loop is implemented directly in `agent.py` using the `anthropic` Python SDK. There is no framework or abstraction layer — the code is straightforward to read, modify, and extend.
-
-## Design principles
-
-This repo is meant to be read, not just run. The patterns below are deliberate, drawn from Anthropic's and AWS's published guidance on building agents, and each is fixable/verifiable in the code itself rather than asserted here:
-
-- **Bounded iteration.** Every agent loop has a hard `max_iterations` cap and reports explicitly if it's hit without a normal end turn, instead of running unbounded or silently returning a partial result. ([Anthropic: building effective agents](https://www.anthropic.com/engineering/building-effective-agents) recommends stopping conditions to keep agents under control.)
-- **Actionable tool errors, not crashes.** Tool dispatch catches bad arguments and runtime failures and returns them to the model as structured `{"error": "..."}` tool results, so the agent can see what went wrong and retry — rather than the whole process dying on an uncaught exception. ([Anthropic: writing effective tools for agents](https://www.anthropic.com/engineering/writing-tools-for-agents) — "prompt-engineer your error responses to clearly communicate specific and actionable improvements, rather than opaque error codes or tracebacks.")
-- **Explicit scope.** Each template's README states what it does and, just as importantly, what it deliberately does not do — following [AWS's guidance](https://aws.amazon.com/blogs/machine-learning/best-practices-for-building-robust-generative-ai-applications-with-amazon-bedrock-agents-part-1/) to define an agent's primary functions and out-of-scope tasks before building it.
-- **No silent side effects.** Templates that produce an externally-visible artifact (a Slack message, an email) stop at generating the text. Actually sending it is left as a deliberate, separate step, so nothing gets posted or delivered without a human choosing to do so.
-- **Clear tool definitions.** Tool `input_schema`s include a description for every parameter, and tool descriptions state exactly when and how to use each one — Anthropic's "agent-computer interface" (ACI) guidance found that tool description quality has an outsized effect on error rates.
+This loop is implemented directly in each `agent.py` using the `anthropic` Python SDK. There is no framework or abstraction layer — the code is straightforward to read, modify, and extend.
 
 ## Adapting templates to production
 
-`tools.py` contains mock implementations. To connect to real systems:
+Each `tools.py` file contains mock implementations. To connect to real systems:
 
-- Replace `fetch_jira_tickets` with your actual Jira client (the `jira` Python library or the Jira REST API).
-- Replace `load_metrics_csv` with your production database connection.
+- Replace `submit_to_jira` with calls to the Jira REST API or the `jira` Python library.
+- Replace `run_sql_query` with your production database connection.
+- Replace `fetch_jira_tickets` with your actual Jira client.
+- Replace `post_status_update` with your status page API (Statuspage, Atlassian, etc.).
 
-The agent logic in `agent.py` does not need to change when you swap in real tool implementations.
-
-
-## Related Projects
-
-- [pm-agents](https://github.com/swethasalunke-tech/pm-agents) - six Claude agents for PM workflows (PRD writing, roadmap prioritization, meeting notes, user research synthesis, sprint retro, competitive intel)
+The agent logic in each `agent.py` does not need to change when you swap in real tool implementations.
