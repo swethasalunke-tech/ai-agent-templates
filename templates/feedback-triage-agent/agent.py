@@ -54,6 +54,7 @@ def run_agent(feedback_items: list[dict], model: str) -> None:
 
     iteration = 0
     max_iterations = 50  # guard against runaway loops
+    ended_via_stop = False
 
     while iteration < max_iterations:
         iteration += 1
@@ -91,6 +92,7 @@ def run_agent(feedback_items: list[dict], model: str) -> None:
         messages.append({"role": "assistant", "content": response.content})
 
         if response.stop_reason == "end_turn":
+            ended_via_stop = True
             break
 
         if tool_results:
@@ -98,6 +100,14 @@ def run_agent(feedback_items: list[dict], model: str) -> None:
         else:
             # No tool results and not end_turn — something unexpected
             break
+
+    if not ended_via_stop:
+        console.print(
+            f"[yellow]Stopped after {iteration} iteration(s) without the model "
+            "reaching a normal end turn (hit the iteration limit, or the model "
+            "stopped for a reason other than end_turn with no tool calls to "
+            "continue on). The output above, if any, may be incomplete.[/yellow]"
+        )
 
     console.print(f"\n[dim]Completed in {iteration} iteration(s)[/dim]")
 
