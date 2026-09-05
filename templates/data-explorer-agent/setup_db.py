@@ -59,7 +59,7 @@ def create_database() -> None:
 
     # Users
     users = [
-        (1, "Alice Chen",      "alice@example.com",   pro",        "US",  "2023-01-15", 1),
+        (1, "Alice Chen",      "alice@example.com",   "pro",        "US",  "2023-01-15", 1),
         (2, "Bob Martins",     "bob@example.com",     "starter",    "BR",  "2023-03-22", 1),
         (3, "Cate Liu",        "cate@example.com",    "enterprise", "SG",  "2022-11-01", 1),
         (4, "David Park",      "david@example.com",   "free",       "KR",  "2024-01-10", 1),
