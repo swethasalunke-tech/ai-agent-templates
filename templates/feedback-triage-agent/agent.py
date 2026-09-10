@@ -136,7 +136,12 @@ def main(input_path: str, model: str) -> None:
         console.print(f"[red]Error: File not found: {input_path}[/red]")
         sys.exit(1)
 
-    feedback_items = json.loads(path.read_text())
+    try:
+        feedback_items = json.loads(path.read_text())
+    except json.JSONDecodeError as e:
+        console.print(f"[red]Error: Invalid JSON in {input_path}: {e}[/red]")
+        sys.exit(1)
+
     run_agent(feedback_items, model)
 
 
