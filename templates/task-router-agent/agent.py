@@ -112,10 +112,21 @@ def main(tasks: str, model: str) -> None:
         sys.exit(1)
 
     if tasks:
-        with open(tasks) as f:
-            task_list = json.load(f)
+        if not os.path.exists(tasks):
+            console.print(f"[red]Error: File not found: {tasks}[/red]")
+            sys.exit(1)
+        try:
+            with open(tasks) as f:
+                task_list = json.load(f)
+        except json.JSONDecodeError as e:
+            console.print(f"[red]Error: Invalid JSON in {tasks}: {e}[/red]")
+            sys.exit(1)
     else:
-        task_list = json.load(sys.stdin)
+        try:
+            task_list = json.load(sys.stdin)
+        except json.JSONDecodeError as e:
+            console.print(f"[red]Error: Invalid JSON on stdin: {e}[/red]")
+            sys.exit(1)
 
     run_agent(task_list, model)
 
