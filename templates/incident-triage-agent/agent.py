@@ -152,7 +152,11 @@ def main(input_path: str, single_description: str | None, model: str) -> None:
         if not path.exists():
             console.print(f"[red]Error: File not found: {input_path}[/red]")
             sys.exit(1)
-        incidents = json.loads(path.read_text())
+        try:
+            incidents = json.loads(path.read_text())
+        except json.JSONDecodeError as e:
+            console.print(f"[red]Error: Invalid JSON in {input_path}: {e}[/red]")
+            sys.exit(1)
 
     run_agent(incidents, model)
 
